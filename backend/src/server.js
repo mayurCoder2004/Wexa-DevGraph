@@ -1,11 +1,15 @@
 const express = require("express");
 const driver = require("./config/database");
+const developerRoutes = require("./routes/developerRoutes");
 
 require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
+
+// Routes
+app.use("/api/developers", developerRoutes);
 
 app.get("/health", async (req, res) => {
   const session = driver.session();

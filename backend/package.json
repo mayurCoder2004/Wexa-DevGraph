@@ -11,7 +11,8 @@
     "verify-schema": "node src/scripts/verifySchema.js",
     "seed": "node src/scripts/seedDatabase.js",
     "verify-data": "node src/scripts/verifyData.js",
-    "test-query": "node src/scripts/testGraphQuery.js"
+    "test-query": "node src/scripts/testGraphQuery.js",
+    "test-graph": "node src/scripts/testDeveloperGraph.js"
   },
   "keywords": [],
   "author": "",

@@ -8,7 +8,10 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "schema": "node src/scripts/applySchema.js",
-    "verify-schema": "node src/scripts/verifySchema.js"
+    "verify-schema": "node src/scripts/verifySchema.js",
+    "seed": "node src/scripts/seedDatabase.js",
+    "verify-data": "node src/scripts/verifyData.js",
+    "test-query": "node src/scripts/testGraphQuery.js"
   },
   "keywords": [],
   "author": "",

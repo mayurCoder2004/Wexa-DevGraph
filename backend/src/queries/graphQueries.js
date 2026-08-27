@@ -42,7 +42,33 @@ const getDeveloperGraph = `
     }) AS technologies
 `;
 
+const getProjectGraph = `
+  MATCH (p:Project {id: $projectId})
+
+  OPTIONAL MATCH (p)-[:REQUIRES]->(s:Skill)
+  OPTIONAL MATCH (p)-[:USES]->(t:Technology)
+
+  RETURN
+    p.id AS projectId,
+    p.name AS projectName,
+    p.description AS description,
+    p.category AS category,
+
+    collect(DISTINCT {
+      id: s.id,
+      name: s.name,
+      category: s.category
+    }) AS skills,
+
+    collect(DISTINCT {
+      id: t.id,
+      name: t.name,
+      category: t.category
+    }) AS technologies
+`;
+
 module.exports = {
   findDevelopersBySkill,
   getDeveloperGraph,
+  getProjectGraph,
 };

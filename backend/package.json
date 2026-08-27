@@ -12,7 +12,8 @@
     "seed": "node src/scripts/seedDatabase.js",
     "verify-data": "node src/scripts/verifyData.js",
     "test-query": "node src/scripts/testGraphQuery.js",
-    "test-graph": "node src/scripts/testDeveloperGraph.js"
+    "test-graph": "node src/scripts/testDeveloperGraph.js",
+    "test-project": "node src/scripts/testProjectGraph.js"
   },
   "keywords": [],
   "author": "",

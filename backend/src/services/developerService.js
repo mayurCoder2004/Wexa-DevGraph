@@ -1,5 +1,28 @@
 const driver = require("../config/database");
-const { findDevelopersBySkill } = require("../queries/graphQueries");
+
+const {
+  getAllDevelopers,
+  findDevelopersBySkill,
+} = require("../queries/graphQueries");
+
+async function getAllDevelopersService() {
+  const session = driver.session();
+
+  try {
+    const result = await session.run(getAllDevelopers);
+
+    return result.records.map((record) => ({
+      id: record.get("id"),
+      name: record.get("name"),
+      role: record.get("role"),
+      experience: record.get("experience"),
+      location: record.get("location"),
+      skills: record.get("skills"),
+    }));
+  } finally {
+    await session.close();
+  }
+}
 
 async function findDevelopersBySkillService(skillName) {
   const session = driver.session();
@@ -24,5 +47,6 @@ async function findDevelopersBySkillService(skillName) {
 }
 
 module.exports = {
+  getAllDevelopersService,
   findDevelopersBySkillService,
 };

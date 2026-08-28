@@ -24,18 +24,12 @@ export async function getDeveloperRecommendations(projectId) {
   return response.data;
 }
 
-export async function getDevelopersBySkill(skill = "") {
-  if (skill.trim()) {
-    const response = await api.get("/developers/by-skill", {
-      params: {
-        skill: skill.trim(),
-      },
-    });
-
-    return response.data;
-  }
-
-  const response = await api.get("/developers");
+export async function getDevelopersBySkill(skill) {
+  const response = await api.get("/developers/by-skill", {
+    params: {
+      skill,
+    },
+  });
 
   return response.data;
 }

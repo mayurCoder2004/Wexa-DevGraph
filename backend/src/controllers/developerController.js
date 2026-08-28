@@ -1,6 +1,26 @@
 const {
+  getAllDevelopersService,
   findDevelopersBySkillService,
 } = require("../services/developerService");
+
+async function getAllDevelopers(req, res) {
+  try {
+    const developers = await getAllDevelopersService();
+
+    return res.status(200).json({
+      success: true,
+      count: developers.length,
+      data: developers,
+    });
+  } catch (error) {
+    console.error("Get developers controller error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve developers",
+    });
+  }
+}
 
 async function findDevelopersBySkill(req, res) {
   try {
@@ -31,5 +51,6 @@ async function findDevelopersBySkill(req, res) {
 }
 
 module.exports = {
+  getAllDevelopers,
   findDevelopersBySkill,
 };

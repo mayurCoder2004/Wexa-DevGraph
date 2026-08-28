@@ -1,6 +1,6 @@
 const findDevelopersBySkill = `
   MATCH (d:Developer)-[r:HAS_SKILL]->(s:Skill)
-  WHERE toLower(s.name) = toLower($skillName)
+  WHERE toLower(s.name) CONTAINS toLower($skillName)
   RETURN
     d.id AS id,
     d.name AS name,
@@ -10,6 +10,26 @@ const findDevelopersBySkill = `
     r.proficiency AS proficiency,
     r.years AS years
   ORDER BY r.years DESC, d.name ASC
+`;
+
+const getAllDevelopers = `
+  MATCH (d:Developer)
+  OPTIONAL MATCH (d)-[r:HAS_SKILL]->(s:Skill)
+
+  RETURN
+    d.id AS id,
+    d.name AS name,
+    d.role AS role,
+    d.experience AS experience,
+    d.location AS location,
+    collect(DISTINCT {
+      id: s.id,
+      name: s.name,
+      category: s.category,
+      proficiency: r.proficiency,
+      years: r.years
+    }) AS skills
+  ORDER BY d.name ASC
 `;
 
 const getDeveloperGraph = `
@@ -72,7 +92,7 @@ const getProjectGraph = `
 
 const getRelatedSkills = `
   MATCH (s:Skill)
-  WHERE toLower(s.name) = toLower($skillName)
+  WHERE toLower(s.name) CONTAINS toLower($skillName)
 
   OPTIONAL MATCH (s)-[r:RELATED_TO]->(related:Skill)
 
@@ -205,6 +225,7 @@ const getDeveloperProjectTechnology = `
 
 module.exports = {
   findDevelopersBySkill,
+  getAllDevelopers,
   getDeveloperGraph,
   getProjectGraph,
   getRelatedSkills,

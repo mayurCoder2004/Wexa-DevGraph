@@ -1,5 +1,16 @@
 const driver = require("../config/database");
-const { getProjectGraph } = require("../queries/graphQueries");
+const {
+  getProjectGraph,
+  findDevelopersForProject,
+} = require("../queries/graphQueries");
+
+function toNumber(value) {
+  if (value && typeof value.toNumber === "function") {
+    return value.toNumber();
+  }
+
+  return Number(value);
+}
 
 async function getProjectGraphService(projectId) {
   const session = driver.session();
@@ -30,6 +41,31 @@ async function getProjectGraphService(projectId) {
   }
 }
 
+async function findDevelopersForProjectService(projectId) {
+  const session = driver.session();
+
+  try {
+    const result = await session.run(findDevelopersForProject, {
+      projectId,
+    });
+
+    return result.records.map((record) => ({
+      id: record.get("id"),
+      name: record.get("name"),
+      role: record.get("role"),
+      experience: record.get("experience"),
+      location: record.get("location"),
+      matchedSkills: record.get("matchedSkills"),
+      matchedSkillCount: toNumber(record.get("matchedSkillCount")),
+      requiredSkillCount: toNumber(record.get("requiredSkillCount")),
+      matchPercentage: toNumber(record.get("matchPercentage")),
+    }));
+  } finally {
+    await session.close();
+  }
+}
+
 module.exports = {
   getProjectGraphService,
+  findDevelopersForProjectService,
 };

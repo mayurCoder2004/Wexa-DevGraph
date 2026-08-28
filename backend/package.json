@@ -13,7 +13,10 @@
     "verify-data": "node src/scripts/verifyData.js",
     "test-query": "node src/scripts/testGraphQuery.js",
     "test-graph": "node src/scripts/testDeveloperGraph.js",
-    "test-project": "node src/scripts/testProjectGraph.js"
+    "test-project": "node src/scripts/testProjectGraph.js",
+    "test-related-skills": "node src/scripts/testRelatedSkills.js",
+    "test-project-match": "node src/scripts/testDeveloperProjectMatch.js",
+    "test-skill-gap": "node src/scripts/testSkillGap.js"
   },
   "keywords": [],
   "author": "",

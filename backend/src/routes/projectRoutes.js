@@ -1,10 +1,13 @@
 const express = require("express");
+
 const {
-  getProjectGraph,
+  getProject,
+  findDevelopersForProject,
 } = require("../controllers/projectController");
 
 const router = express.Router();
 
-router.get("/:id", getProjectGraph);
+router.get("/:id", getProject);
+router.get("/:id/developers", findDevelopersForProject);
 
 module.exports = router;

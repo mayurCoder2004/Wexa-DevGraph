@@ -6,6 +6,7 @@ const graphRoutes = require("./routes/graphRoutes");
 const skillRoutes = require("./routes/skillRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const skillGapRoutes = require("./routes/skillGapRoutes");
+const recommendationRoutes = require("./routes/recommendationRoutes");
 
 require("dotenv").config();
 
@@ -19,6 +20,7 @@ app.use("/api/graph", graphRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/skill-gap", skillGapRoutes);
+app.use("/api/recommendations", recommendationRoutes);
 
 app.get("/health", async (req, res) => {
   const session = driver.session();

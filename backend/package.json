@@ -16,7 +16,8 @@
     "test-project": "node src/scripts/testProjectGraph.js",
     "test-related-skills": "node src/scripts/testRelatedSkills.js",
     "test-project-match": "node src/scripts/testDeveloperProjectMatch.js",
-    "test-skill-gap": "node src/scripts/testSkillGap.js"
+    "test-skill-gap": "node src/scripts/testSkillGap.js",
+    "test-recommendations": "node src/scripts/testRecommendations.js"
   },
   "keywords": [],
   "author": "",

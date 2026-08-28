@@ -178,6 +178,22 @@ const getGraphStats = `
     count(uses) AS projectTechnologyRelationshipCount
 `;
 
+const getDeveloperProjectTechnology = `
+  MATCH (d:Developer {id: $developerId})
+        -[:HAS_SKILL]->(s:Skill)
+        <-[:REQUIRES]-(p:Project)
+        -[:USES]->(t:Technology)
+
+  RETURN
+    d.id AS developerId,
+    d.name AS developerName,
+    collect(DISTINCT {
+      skill: s.name,
+      project: p.name,
+      technology: t.name
+    }) AS paths
+`;
+
 module.exports = {
   findDevelopersBySkill,
   getDeveloperGraph,
@@ -185,4 +201,5 @@ module.exports = {
   getRelatedSkills,
   findDevelopersForProject,
   getGraphStats,
+  getDeveloperProjectTechnology,
 };

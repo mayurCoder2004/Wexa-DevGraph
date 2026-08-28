@@ -1,7 +1,9 @@
 const driver = require("../config/database");
+
 const {
   getDeveloperGraph,
   getGraphStats,
+  getDeveloperProjectTechnology,
 } = require("../queries/graphQueries");
 
 async function getDeveloperGraphService(developerId) {
@@ -69,7 +71,34 @@ async function getGraphStatsService() {
   }
 }
 
+async function getDeveloperProjectTechnologyService(developerId) {
+  const session = driver.session();
+
+  try {
+    const result = await session.run(getDeveloperProjectTechnology, {
+      developerId,
+    });
+
+    if (result.records.length === 0) {
+      return null;
+    }
+
+    const record = result.records[0];
+
+    return {
+      developer: {
+        id: record.get("developerId"),
+        name: record.get("developerName"),
+      },
+      paths: record.get("paths"),
+    };
+  } finally {
+    await session.close();
+  }
+}
+
 module.exports = {
   getDeveloperGraphService,
   getGraphStatsService,
+  getDeveloperProjectTechnologyService,
 };

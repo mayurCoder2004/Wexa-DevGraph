@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const driver = require("./config/database");
 
 const developerRoutes = require("./routes/developerRoutes");
@@ -11,6 +12,12 @@ const recommendationRoutes = require("./routes/recommendationRoutes");
 require("dotenv").config();
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
 app.use(express.json());
 

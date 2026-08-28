@@ -8,6 +8,11 @@ const api = axios.create({
   baseURL: apiBaseUrl,
 });
 
+export async function getAllProjects() {
+  const response = await api.get("/projects");
+  return response.data;
+}
+
 export async function getProject(projectId) {
   const response = await api.get(`/projects/${projectId}`);
   return response.data;

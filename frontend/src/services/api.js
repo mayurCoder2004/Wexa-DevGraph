@@ -43,3 +43,13 @@ export async function getAllSkills() {
 
   return response.data;
 }
+
+export async function getRelatedSkills(skill) {
+  const response = await api.get("/skills/related", {
+    params: {
+      skill: skill.trim(),
+    },
+  });
+
+  return response.data;
+}

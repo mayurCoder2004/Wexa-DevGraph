@@ -51,21 +51,21 @@ const navigation = [
 
 function Sidebar() {
   return (
-    <aside className="fixed inset-y-0 left-0 flex w-64 flex-col border-r border-slate-800 bg-[#0d1320]">
-      <div className="flex h-20 items-center border-b border-slate-800 px-6">
+    <aside className="fixed inset-y-0 left-0 flex w-64 flex-col border-r app-border app-surface-secondary">
+      <div className="flex h-20 items-center border-b app-border px-6">
         <div>
-          <h1 className="text-lg font-bold text-white">
+          <h1 className="text-lg font-bold app-text-primary">
             Wexa-DevGraph
           </h1>
 
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs app-text-muted">
             Developer Intelligence
           </p>
         </div>
       </div>
 
       <nav className="flex-1 px-3 py-6">
-        <p className="px-3 pb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+        <p className="px-3 pb-3 text-xs font-semibold uppercase tracking-wider app-text-muted">
           Workspace
         </p>
 
@@ -80,8 +80,8 @@ function Sidebar() {
                 className={({ isActive }) =>
                   `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
                     isActive
-                      ? "bg-blue-500/10 text-blue-400"
-                      : "text-slate-400 hover:bg-slate-800/70 hover:text-white"
+                      ? "app-accent-soft app-accent"
+                      : "app-text-muted hover:bg-slate-800/70 hover:text-white"
                   }`
                 }
               >
@@ -94,14 +94,14 @@ function Sidebar() {
         </div>
       </nav>
 
-      <div className="border-t border-slate-800 p-3">
+      <div className="border-t app-border p-3">
         <NavLink
           to="/settings"
           className={({ isActive }) =>
             `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
               isActive
-                ? "bg-blue-500/10 text-blue-400"
-                : "text-slate-400 hover:bg-slate-800/70 hover:text-white"
+                ? "app-accent-soft app-accent"
+                : "app-text-muted hover:bg-slate-800/70 hover:text-white"
             }`
           }
         >

@@ -67,7 +67,7 @@ function Developers() {
   }
 
   return (
-    <div className="min-h-full bg-[#0b1120] p-8">
+    <div className="min-h-full app-bg p-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-white">
@@ -79,7 +79,7 @@ function Developers() {
           </p>
         </div>
 
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-slate-800 bg-[#111827] px-4 py-3">
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-slate-800 app-surface-secondary px-4 py-3">
           <Search size={19} className="text-slate-500" />
 
           <input
@@ -101,7 +101,7 @@ function Developers() {
         </div>
 
         {loading && (
-          <div className="rounded-xl border border-slate-800 bg-[#111827] p-8 text-center text-slate-400">
+          <div className="rounded-xl border border-slate-800 app-surface-secondary p-8 text-center text-slate-400">
             Loading developers...
           </div>
         )}
@@ -129,7 +129,7 @@ function Developers() {
             </div>
 
             {filteredDevelopers.length === 0 ? (
-              <div className="rounded-xl border border-slate-800 bg-[#111827] p-10 text-center">
+              <div className="rounded-xl border border-slate-800 app-surface-secondary p-10 text-center">
                 <Code2
                   size={32}
                   className="mx-auto mb-3 text-slate-600"
@@ -148,7 +148,7 @@ function Developers() {
                 {filteredDevelopers.map((developer) => (
                   <div
                     key={developer.id}
-                    className="rounded-xl border border-slate-800 bg-[#111827] p-5 transition hover:border-slate-700"
+                    className="rounded-xl border border-slate-800 app-surface-secondary p-5 transition hover:border-slate-700"
                   >
                     <div className="mb-4">
                       <h2 className="text-lg font-semibold text-white">

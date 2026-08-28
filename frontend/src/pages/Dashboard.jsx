@@ -1,6 +1,6 @@
 function Dashboard() {
   return (
-    <main className="min-h-screen bg-[#0b0f19] px-6 py-12">
+    <main className="min-h-screen app-bg px-6 py-12">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10">
           <p className="mb-2 text-sm font-medium text-blue-400">

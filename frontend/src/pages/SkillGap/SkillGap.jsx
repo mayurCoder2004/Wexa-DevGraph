@@ -71,7 +71,7 @@ function SkillGap() {
         <button
           onClick={handleAnalyze}
           disabled={loading}
-          className="rounded-lg bg-slate-100 px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg app-control px-5 py-3 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Analyzing..." : "Analyze"}
         </button>

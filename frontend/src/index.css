@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 * {
   box-sizing: border-box;
@@ -9,11 +9,12 @@ body,
 #root {
   margin: 0;
   min-height: 100%;
+  background: var(--app-bg);
 }
 
 body {
-  background: #0b0f19;
-  color: #f8fafc;
+  background: var(--app-bg);
+  color: var(--app-text);
   font-family:
     Inter,
     ui-sans-serif,
@@ -22,7 +23,106 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
 }
+
+:root {
+  color-scheme: dark;
+  --app-bg: #0b0f19;
+  --surface: #0f172a;
+  --surface-secondary: #111827;
+  --surface-tertiary: #1e293b;
+  --border: #1e293b;
+  --border-strong: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --accent: #60a5fa;
+  --accent-soft: rgba(59, 130, 246, 0.1);
+  --control-bg: #f1f5f9;
+  --control-text: #0f172a;
+  --app-text: var(--text-primary);
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --app-bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-secondary: #f1f5f9;
+  --surface-tertiary: #e2e8f0;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --accent: #2563eb;
+  --accent-soft: rgba(37, 99, 235, 0.1);
+  --control-bg: #0f172a;
+  --control-text: #f8fafc;
+  --app-text: var(--text-primary);
+}
+
+.app-bg {
+  background-color: var(--app-bg);
+}
+
+.app-text {
+  color: var(--app-text);
+}
+
+.app-surface { background-color: var(--surface); }
+.app-surface-secondary { background-color: var(--surface-secondary); }
+.app-surface-tertiary { background-color: var(--surface-tertiary); }
+.app-border { border-color: var(--border); }
+.app-border-strong { border-color: var(--border-strong); }
+.app-text-primary { color: var(--text-primary); }
+.app-text-secondary { color: var(--text-secondary); }
+.app-text-muted { color: var(--text-muted); }
+.app-accent { color: var(--accent); }
+.app-accent-soft { background-color: var(--accent-soft); }
+.app-control { background-color: var(--control-bg); color: var(--control-text); }
+.app-control:hover { background-color: color-mix(in srgb, var(--control-bg) 88%, var(--surface)); }
+.setting-toggle-on { background-color: var(--control-bg); }
+.setting-toggle-off { background-color: var(--surface-tertiary); }
+.setting-toggle-knob-on { background-color: var(--control-text); }
+.setting-toggle-knob-off { background-color: var(--text-muted); }
+
+/* Existing page utilities resolve through the semantic palette. */
+.bg-slate-950, .bg-slate-950\/40 { background-color: var(--app-bg); }
+.bg-slate-900, .bg-slate-900\/60 { background-color: var(--surface); }
+.bg-slate-800, .bg-slate-800\/70 { background-color: var(--surface-tertiary); }
+.text-white, .text-slate-100 { color: var(--text-primary); }
+.text-slate-200, .text-slate-300 { color: var(--text-secondary); }
+.text-slate-400, .text-slate-500 { color: var(--text-muted); }
+.text-slate-600 { color: color-mix(in srgb, var(--text-muted) 78%, transparent); }
+.border-slate-800 { border-color: var(--border); }
+.border-slate-700 { border-color: var(--border-strong); }
+.hover\:bg-slate-800\/70:hover, .hover\:bg-slate-800:hover { background-color: var(--surface-tertiary); }
+.hover\:text-white:hover { color: var(--text-primary); }
+.hover\:border-slate-700:hover { border-color: var(--border-strong); }
+
+/* The visualization is deliberately dark for graph readability. */
+.graph-canvas .bg-slate-950 { background-color: #020617; }
+.graph-canvas .bg-slate-900 { background-color: #0f172a; }
+.graph-canvas .text-white { color: #f8fafc; }
+.graph-canvas .text-slate-400 { color: #94a3b8; }
+.graph-canvas .text-slate-500 { color: #64748b; }
+.graph-canvas .border-slate-700 { border-color: #334155; }
+
+.react-flow__controls,
+.react-flow__minimap {
+  border: 1px solid #334155;
+  background: #0f172a;
+}
+.react-flow__controls-button {
+  border-bottom-color: #334155;
+  background: #0f172a;
+  fill: #cbd5e1;
+  color: #cbd5e1;
+}
+.react-flow__controls-button:hover { background: #1e293b; }
 
 button,
 input,

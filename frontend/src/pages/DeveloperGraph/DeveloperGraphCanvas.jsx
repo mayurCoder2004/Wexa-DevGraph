@@ -160,7 +160,7 @@ function DeveloperGraphCanvas({ data }) {
   );
 
   return (
-    <div className="mt-6 h-[700px] overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+    <div className="graph-canvas mt-6 h-[700px] overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
       <ReactFlow
         nodes={nodes}
         edges={edges}

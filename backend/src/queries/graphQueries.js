@@ -137,10 +137,52 @@ const findDevelopersForProject = `
   ORDER BY matchPercentage DESC, d.experience DESC, d.name ASC
 `;
 
+const getGraphStats = `
+  MATCH (d:Developer)
+  WITH count(d) AS developerCount
+
+  MATCH (p:Project)
+  WITH developerCount, count(p) AS projectCount
+
+  MATCH (s:Skill)
+  WITH developerCount, projectCount, count(s) AS skillCount
+
+  MATCH (t:Technology)
+  WITH developerCount, projectCount, skillCount, count(t) AS technologyCount
+
+  OPTIONAL MATCH ()-[hs:HAS_SKILL]->()
+  WITH
+    developerCount,
+    projectCount,
+    skillCount,
+    technologyCount,
+    count(hs) AS developerSkillRelationshipCount
+
+  OPTIONAL MATCH ()-[req:REQUIRES]->()
+  WITH
+    developerCount,
+    projectCount,
+    skillCount,
+    technologyCount,
+    developerSkillRelationshipCount,
+    count(req) AS projectSkillRelationshipCount
+
+  OPTIONAL MATCH ()-[uses:USES]->()
+  RETURN
+    developerCount,
+    projectCount,
+    skillCount,
+    technologyCount,
+    developerSkillRelationshipCount,
+    projectSkillRelationshipCount,
+    count(uses) AS projectTechnologyRelationshipCount
+`;
+
 module.exports = {
   findDevelopersBySkill,
   getDeveloperGraph,
   getProjectGraph,
   getRelatedSkills,
   findDevelopersForProject,
+  getGraphStats,
 };

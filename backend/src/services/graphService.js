@@ -1,5 +1,8 @@
 const driver = require("../config/database");
-const { getDeveloperGraph } = require("../queries/graphQueries");
+const {
+  getDeveloperGraph,
+  getGraphStats,
+} = require("../queries/graphQueries");
 
 async function getDeveloperGraphService(developerId) {
   const session = driver.session();
@@ -32,6 +35,41 @@ async function getDeveloperGraphService(developerId) {
   }
 }
 
+async function getGraphStatsService() {
+  const session = driver.session();
+
+  try {
+    const result = await session.run(getGraphStats);
+
+    if (result.records.length === 0) {
+      return null;
+    }
+
+    const record = result.records[0];
+
+    return {
+      developers: record.get("developerCount").toNumber(),
+      projects: record.get("projectCount").toNumber(),
+      skills: record.get("skillCount").toNumber(),
+      technologies: record.get("technologyCount").toNumber(),
+      relationships: {
+        developerSkills: record
+          .get("developerSkillRelationshipCount")
+          .toNumber(),
+        projectSkills: record
+          .get("projectSkillRelationshipCount")
+          .toNumber(),
+        projectTechnologies: record
+          .get("projectTechnologyRelationshipCount")
+          .toNumber(),
+      },
+    };
+  } finally {
+    await session.close();
+  }
+}
+
 module.exports = {
   getDeveloperGraphService,
+  getGraphStatsService,
 };

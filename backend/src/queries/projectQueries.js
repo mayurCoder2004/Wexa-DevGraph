@@ -1,13 +1,13 @@
 const findDevelopersForProject = `
-  MATCH (p\:Project {id: $projectId})
-  MATCH (p)-[:REQUIRES]->(required\:Skill)
+  MATCH (p:Project {id: $projectId})
+  MATCH (p)-[:REQUIRES]->(required:Skill)
 
   WITH
     p,
     collect(DISTINCT required) AS requiredSkills
 
-  MATCH (d\:Developer)
-  OPTIONAL MATCH (d)-[r\:HAS\_SKILL]->(s\:Skill)
+  MATCH (d:Developer)
+  OPTIONAL MATCH (d)-[r:HAS_SKILL]->(s:Skill)
 
   WITH
     p,
@@ -37,6 +37,7 @@ const findDevelopersForProject = `
     requiredSkills,
     d,
     developerSkills,
+    matchedRequiredSkills,
     [
       ds IN developerSkills
       WHERE any(required IN requiredSkills

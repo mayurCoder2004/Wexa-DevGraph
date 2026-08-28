@@ -1,5 +1,8 @@
+const path = require("path");
 const neo4j = require("neo4j-driver");
-require("dotenv").config();
+require("dotenv").config({
+  path: path.resolve(__dirname, "../../.env"),
+});
 
 const driver = neo4j.driver(
   process.env.COGNODB_URI,

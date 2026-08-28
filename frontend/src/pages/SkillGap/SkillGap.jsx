@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { getProject, getSkillGap } from "../../services/api";
+import {
+  getAllDevelopers,
+  getProject,
+  getSkillGap,
+} from "../../services/api";
 
 function SkillGap() {
   const [projectId, setProjectId] = useState("");
@@ -20,9 +24,9 @@ function SkillGap() {
       setProject(null);
       setDevelopers([]);
 
-      const [projectResponse, developersResponse] = await Promise.all([
+      const [projectResponse, allDevelopersResponse] = await Promise.all([
         getProject(projectId.trim()),
-        getSkillGap(projectId.trim()),
+        getAllDevelopers(),
       ]);
 
       if (!projectResponse.success) {
@@ -30,8 +34,30 @@ function SkillGap() {
         return;
       }
 
+      const allDevelopers = allDevelopersResponse.data || [];
+      const skillGapResponses = await Promise.all(
+        allDevelopers.map(async (developer) => {
+          const response = await getSkillGap(
+            developer.id,
+            projectId.trim()
+          );
+
+          if (!response.success) {
+            return null;
+          }
+
+          return {
+            ...response.data,
+            id: developer.id,
+            name: response.data.developer.name,
+            role: developer.role,
+            location: developer.location,
+          };
+        })
+      );
+
       setProject(projectResponse.data);
-      setDevelopers(developersResponse.data || []);
+      setDevelopers(skillGapResponses.filter(Boolean));
     } catch (err) {
       console.error("Skill gap error:", err);
       setError("Failed to analyze project skill gap");

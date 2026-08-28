@@ -1,7 +1,11 @@
 import axios from "axios";
 
+const apiBaseUrl = (
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+).replace(/\/+$/, "");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: apiBaseUrl,
 });
 
 export async function getProject(projectId) {
@@ -14,8 +18,10 @@ export async function getProjectDevelopers(projectId) {
   return response.data;
 }
 
-export async function getSkillGap(projectId) {
-  const response = await api.get(`/projects/${projectId}/developers`);
+export async function getSkillGap(developerId, projectId) {
+  const response = await api.get(
+    `/skill-gap/developers/${developerId}/projects/${projectId}`
+  );
   return response.data;
 }
 

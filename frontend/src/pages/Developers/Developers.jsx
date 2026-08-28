@@ -7,7 +7,7 @@ import {
   X,
 } from "lucide-react";
 
-import { getDevelopersBySkill } from "../../services/api";
+import { getAllDevelopers } from "../../services/api";
 
 function Developers() {
   const [developers, setDevelopers] = useState([]);
@@ -21,7 +21,7 @@ function Developers() {
         setLoading(true);
         setError("");
 
-        const response = await getDevelopersBySkill();
+        const response = await getAllDevelopers();
 
         setDevelopers(response.data || []);
       } catch (err) {

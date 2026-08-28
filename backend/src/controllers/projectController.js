@@ -1,7 +1,27 @@
 const {
+  getAllProjectsService,
   getProjectGraphService,
   findDevelopersForProjectService,
 } = require("../services/projectService");
+
+async function getAllProjects(req, res) {
+  try {
+    const projects = await getAllProjectsService();
+
+    return res.status(200).json({
+      success: true,
+      count: projects.length,
+      data: projects,
+    });
+  } catch (error) {
+    console.error("Get projects controller error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve projects",
+    });
+  }
+}
 
 async function getProject(req, res) {
   try {
@@ -65,6 +85,7 @@ async function findDevelopersForProject(req, res) {
 }
 
 module.exports = {
+  getAllProjects,
   getProject,
   findDevelopersForProject,
 };

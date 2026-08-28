@@ -1,7 +1,12 @@
 const driver = require("../config/database");
+
+const {
+  getAllProjects,
+  findDevelopersForProject,
+} = require("../queries/projectQueries");
+
 const {
   getProjectGraph,
-  findDevelopersForProject,
 } = require("../queries/graphQueries");
 
 function toNumber(value) {
@@ -10,6 +15,24 @@ function toNumber(value) {
   }
 
   return Number(value);
+}
+
+async function getAllProjectsService() {
+  const session = driver.session();
+
+  try {
+    const result = await session.run(getAllProjects);
+
+    return result.records.map((record) => ({
+      id: record.get("id"),
+      name: record.get("name"),
+      description: record.get("description"),
+      category: record.get("category"),
+      skills: record.get("skills"),
+    }));
+  } finally {
+    await session.close();
+  }
 }
 
 async function getProjectGraphService(projectId) {
@@ -66,6 +89,7 @@ async function findDevelopersForProjectService(projectId) {
 }
 
 module.exports = {
+  getAllProjectsService,
   getProjectGraphService,
   findDevelopersForProjectService,
 };

@@ -1,3 +1,21 @@
+const getAllProjects = `
+  MATCH (p:Project)
+  OPTIONAL MATCH (p)-[:REQUIRES]->(s:Skill)
+
+  RETURN
+    p.id AS id,
+    p.name AS name,
+    p.description AS description,
+    p.category AS category,
+    collect(DISTINCT {
+      id: s.id,
+      name: s.name,
+      category: s.category
+    }) AS skills
+
+  ORDER BY p.name ASC
+`;
+
 const findDevelopersForProject = `
   MATCH (p:Project {id: $projectId})
   MATCH (p)-[:REQUIRES]->(required:Skill)
@@ -66,5 +84,6 @@ const findDevelopersForProject = `
 `;
 
 module.exports = {
+  getAllProjects,
   findDevelopersForProject,
 };

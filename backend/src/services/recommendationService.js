@@ -44,13 +44,49 @@ const getDeveloperRecommendations = `
       WHERE any(required IN requiredSkills
         WHERE toLower(ds.name) = toLower(required.name)
       )
-    ] AS matchedSkills,
+    ] AS matchedSkills
+
+  WITH
+    p,
+    requiredSkills,
+    d,
+    developerSkills,
+    matchedSkills,
+
+    [
+      ds IN developerSkills
+      WHERE
+        NOT any(required IN requiredSkills
+          WHERE toLower(ds.name) = toLower(required.name)
+        )
+        AND any(required IN requiredSkills
+          WHERE EXISTS {
+            MATCH (required)-[:RELATED_TO]-(related:Skill)
+            WHERE toLower(related.name) = toLower(ds.name)
+          }
+        )
+    ] AS relatedSkills
+
+  WITH
+    p,
+    requiredSkills,
+    d,
+    developerSkills,
+    matchedSkills,
+    relatedSkills,
 
     [
       required IN requiredSkills
-      WHERE NOT any(ds IN developerSkills
-        WHERE toLower(ds.name) = toLower(required.name)
-      )
+      WHERE
+        NOT any(ds IN developerSkills
+          WHERE toLower(ds.name) = toLower(required.name)
+        )
+        AND NOT any(ds IN developerSkills
+          WHERE EXISTS {
+            MATCH (required)-[:RELATED_TO]-(related:Skill)
+            WHERE toLower(related.name) = toLower(ds.name)
+          }
+        )
     ] AS missingSkills
 
   WITH
@@ -59,35 +95,60 @@ const getDeveloperRecommendations = `
     d,
     developerSkills,
     matchedSkills,
+    relatedSkills,
     missingSkills,
 
     CASE
       WHEN size(requiredSkills) = 0 THEN 0
-      ELSE toFloat(size(matchedSkills)) / size(requiredSkills) * 100
+      ELSE
+        CASE
+          WHEN (
+            toFloat(size(matchedSkills)) +
+            toFloat(size(relatedSkills)) * 0.5
+          ) / size(requiredSkills) * 100 > 100
+          THEN 100
+
+          ELSE (
+            toFloat(size(matchedSkills)) +
+            toFloat(size(relatedSkills)) * 0.5
+          ) / size(requiredSkills) * 100
+        END
     END AS skillMatchScore,
 
     CASE
-      WHEN size(matchedSkills) = 0 THEN 0
+      WHEN size(matchedSkills) = 0
+        AND size(relatedSkills) = 0
+      THEN 0
 
-      WHEN all(skill IN matchedSkills
-        WHERE skill.proficiency = "Advanced"
-      ) THEN 100
+      WHEN size(matchedSkills) > 0
+        AND all(skill IN matchedSkills
+          WHERE skill.proficiency = "Advanced"
+        )
+      THEN 100
 
-      WHEN all(skill IN matchedSkills
-        WHERE skill.proficiency IN ["Advanced", "Intermediate"]
-      ) THEN 85
+      WHEN size(matchedSkills) > 0
+        AND all(skill IN matchedSkills
+          WHERE skill.proficiency IN ["Advanced", "Intermediate"]
+        )
+      THEN 85
 
       WHEN any(skill IN matchedSkills
         WHERE skill.proficiency = "Advanced"
-      ) THEN 80
+      )
+      THEN 80
 
       WHEN any(skill IN matchedSkills
         WHERE skill.proficiency = "Intermediate"
-      ) THEN 70
+      )
+      THEN 70
 
       WHEN any(skill IN matchedSkills
         WHERE skill.proficiency = "Beginner"
-      ) THEN 40
+      )
+      THEN 40
+
+      WHEN size(relatedSkills) > 0
+      THEN 30
 
       ELSE 0
     END AS proficiencyScore,
@@ -134,18 +195,29 @@ const getDeveloperRecommendations = `
     d,
     developerSkills,
     matchedSkills,
+    relatedSkills,
     missingSkills,
     skillMatchScore,
     proficiencyScore,
     experienceScore,
     roleRelevanceScore,
 
-    round(
-      skillMatchScore * 0.50 +
-      proficiencyScore * 0.20 +
-      experienceScore * 0.20 +
-      roleRelevanceScore * 0.10
-    ) AS recommendationScore
+    CASE
+      WHEN (
+        skillMatchScore * 0.50 +
+        proficiencyScore * 0.20 +
+        experienceScore * 0.20 +
+        roleRelevanceScore * 0.10
+      ) > 100
+      THEN 100
+
+      ELSE round(
+        skillMatchScore * 0.50 +
+        proficiencyScore * 0.20 +
+        experienceScore * 0.20 +
+        roleRelevanceScore * 0.10
+      )
+    END AS recommendationScore
 
   RETURN
     d.id AS id,
@@ -154,21 +226,37 @@ const getDeveloperRecommendations = `
     d.experience AS experience,
     d.location AS location,
 
-    [skill IN matchedSkills | {
-      id: skill.id,
-      name: skill.name,
-      category: skill.category,
-      proficiency: skill.proficiency,
-      years: skill.years
-    }] AS matchedSkills,
+    [
+      skill IN matchedSkills | {
+        id: skill.id,
+        name: skill.name,
+        category: skill.category,
+        proficiency: skill.proficiency,
+        years: skill.years
+      }
+    ] AS matchedSkills,
 
-    [skill IN missingSkills | {
-      id: skill.id,
-      name: skill.name,
-      category: skill.category
-    }] AS missingSkills,
+    [
+      skill IN relatedSkills | {
+        id: skill.id,
+        name: skill.name,
+        category: skill.category,
+        proficiency: skill.proficiency,
+        years: skill.years
+      }
+    ] AS relatedSkills,
+
+    [
+      skill IN missingSkills | {
+        id: skill.id,
+        name: skill.name,
+        category: skill.category
+      }
+    ] AS missingSkills,
 
     size(matchedSkills) AS matchedSkillCount,
+    size(relatedSkills) AS relatedSkillCount,
+    size(missingSkills) AS missingSkillCount,
     size(requiredSkills) AS requiredSkillCount,
 
     round(skillMatchScore) AS skillMatchScore,
@@ -190,42 +278,73 @@ const getDeveloperRecommendations = `
       CASE
         WHEN size(matchedSkills) = size(requiredSkills)
         THEN "Matches all required skills"
+
         WHEN size(matchedSkills) > 0
         THEN "Matches " + toString(size(matchedSkills)) +
              " of " + toString(size(requiredSkills)) +
              " required skills"
+
         ELSE "Does not match any required skills"
+      END,
+
+      CASE
+        WHEN size(relatedSkills) > 0
+        THEN "Has " + toString(size(relatedSkills)) +
+             " related skills"
+
+        ELSE null
+      END,
+
+      CASE
+        WHEN size(missingSkills) > 0
+        THEN "Missing " + toString(size(missingSkills)) +
+             " required skills"
+
+        ELSE null
       END,
 
       CASE
         WHEN proficiencyScore = 100
         THEN "Advanced proficiency across matched skills"
+
         WHEN proficiencyScore = 85
         THEN "Strong proficiency across matched skills"
+
         WHEN proficiencyScore = 80
         THEN "Has advanced proficiency in matched skills"
+
         WHEN proficiencyScore = 70
         THEN "Has intermediate proficiency in matched skills"
+
         WHEN proficiencyScore = 40
         THEN "Has beginner proficiency in matched skills"
+
+        WHEN proficiencyScore = 30
+        THEN "Has related skills that provide partial expertise"
+
         ELSE null
       END,
 
       CASE
         WHEN roleRelevanceScore = 100
         THEN "Role is highly relevant to the project"
+
         ELSE "Role has limited relevance to the project"
       END,
 
       CASE
         WHEN experienceScore = 100
         THEN "5+ years of experience"
+
         WHEN experienceScore = 80
         THEN "3+ years of experience"
+
         WHEN experienceScore = 60
         THEN "2+ years of experience"
+
         WHEN experienceScore = 40
         THEN "1+ year of experience"
+
         ELSE null
       END
     ] AS rawReasons
@@ -237,6 +356,19 @@ async function getDeveloperRecommendationsService(projectId) {
   const session = driver.session();
 
   try {
+    // Check whether project exists
+    const projectResult = await session.run(
+      `
+      MATCH (p:Project {id: $projectId})
+      RETURN p.id AS projectId
+      `,
+      { projectId }
+    );
+
+    if (projectResult.records.length === 0) {
+      return null;
+    }
+
     const result = await session.run(getDeveloperRecommendations, {
       projectId,
     });
@@ -249,9 +381,12 @@ async function getDeveloperRecommendationsService(projectId) {
       location: record.get("location"),
 
       matchedSkills: record.get("matchedSkills"),
+      relatedSkills: record.get("relatedSkills"),
       missingSkills: record.get("missingSkills"),
 
       matchedSkillCount: record.get("matchedSkillCount").toNumber(),
+      relatedSkillCount: record.get("relatedSkillCount").toNumber(),
+      missingSkillCount: record.get("missingSkillCount").toNumber(),
       requiredSkillCount: record.get("requiredSkillCount").toNumber(),
 
       skillMatchScore: record.get("skillMatchScore"),

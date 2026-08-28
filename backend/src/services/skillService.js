@@ -21,6 +21,7 @@ async function getRelatedSkillsService(skillName) {
         name: record.get("skillName"),
         category: record.get("category"),
       },
+
       relatedSkills: record.get("relatedSkills"),
     };
   } finally {

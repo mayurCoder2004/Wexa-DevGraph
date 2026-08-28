@@ -16,6 +16,13 @@ async function getDeveloperRecommendations(req, res) {
     const recommendations =
       await getDeveloperRecommendationsService(projectId);
 
+    if (recommendations === null) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
     return res.status(200).json({
       success: true,
       data: {

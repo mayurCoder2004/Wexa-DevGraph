@@ -24,17 +24,20 @@ const getDeveloperGraph = `
     d.role AS role,
     d.experience AS experience,
     d.location AS location,
+
     collect(DISTINCT {
       id: s.id,
       name: s.name,
       category: s.category
     }) AS skills,
+
     collect(DISTINCT {
       id: p.id,
       name: p.name,
       description: p.description,
       category: p.category
     }) AS projects,
+
     collect(DISTINCT {
       id: t.id,
       name: t.name,
@@ -71,16 +74,18 @@ const getRelatedSkills = `
   MATCH (s:Skill)
   WHERE toLower(s.name) = toLower($skillName)
 
-  OPTIONAL MATCH (s)-[:RELATED_TO]->(related:Skill)
+  OPTIONAL MATCH (s)-[r:RELATED_TO]->(related:Skill)
 
   RETURN
     s.id AS skillId,
     s.name AS skillName,
     s.category AS category,
+
     collect(DISTINCT {
       id: related.id,
       name: related.name,
-      category: related.category
+      category: related.category,
+      relationship: type(r)
     }) AS relatedSkills
 `;
 
@@ -111,7 +116,9 @@ const findDevelopersForProject = `
     requiredSkills,
     d,
     developerSkills,
-    [required IN requiredSkills
+
+    [
+      required IN requiredSkills
       WHERE any(ds IN developerSkills
         WHERE toLower(ds.name) = toLower(required.name)
       )
@@ -126,6 +133,7 @@ const findDevelopersForProject = `
     matchedSkills,
     size(matchedSkills) AS matchedSkillCount,
     size(requiredSkills) AS requiredSkillCount,
+
     round(
       toFloat(size(matchedSkills)) /
       CASE
@@ -187,6 +195,7 @@ const getDeveloperProjectTechnology = `
   RETURN
     d.id AS developerId,
     d.name AS developerName,
+
     collect(DISTINCT {
       skill: s.name,
       project: p.name,

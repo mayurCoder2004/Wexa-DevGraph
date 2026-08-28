@@ -1,6 +1,26 @@
 const {
+  getAllSkillsService,
   getRelatedSkillsService,
 } = require("../services/skillService");
+
+async function getAllSkills(req, res) {
+  try {
+    const skills = await getAllSkillsService();
+
+    return res.status(200).json({
+      success: true,
+      count: skills.length,
+      data: skills,
+    });
+  } catch (error) {
+    console.error("Get skills controller error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve skills",
+    });
+  }
+}
 
 async function getRelatedSkills(req, res) {
   try {
@@ -37,5 +57,6 @@ async function getRelatedSkills(req, res) {
 }
 
 module.exports = {
+  getAllSkills,
   getRelatedSkills,
 };

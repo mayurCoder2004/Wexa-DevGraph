@@ -1,5 +1,26 @@
 const driver = require("../config/database");
-const { getRelatedSkills } = require("../queries/graphQueries");
+
+const {
+  getAllSkills,
+  getRelatedSkills,
+} = require("../queries/skillQueries");
+
+async function getAllSkillsService() {
+  const session = driver.session();
+
+  try {
+    const result = await session.run(getAllSkills);
+
+    return result.records.map((record) => ({
+      id: record.get("id"),
+      name: record.get("name"),
+      category: record.get("category"),
+      developerCount: record.get("developerCount").toNumber(),
+    }));
+  } finally {
+    await session.close();
+  }
+}
 
 async function getRelatedSkillsService(skillName) {
   const session = driver.session();
@@ -21,7 +42,6 @@ async function getRelatedSkillsService(skillName) {
         name: record.get("skillName"),
         category: record.get("category"),
       },
-
       relatedSkills: record.get("relatedSkills"),
     };
   } finally {
@@ -30,5 +50,6 @@ async function getRelatedSkillsService(skillName) {
 }
 
 module.exports = {
+  getAllSkillsService,
   getRelatedSkillsService,
 };
